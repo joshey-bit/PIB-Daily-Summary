@@ -1,0 +1,86 @@
+body { font-family: Arial, sans-serif; margin: 2rem; background: #f9f9f9; }
+h1 { text-align: center; }
+/* Responsive grid for plycards: 3 per row on desktop, fewer on smaller screens */
+.summary-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+#summaryContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem 2rem;
+  justify-items: stretch;
+  align-items: stretch;
+  width: 100%;
+  max-width: 1200px;
+  margin: 2rem auto 0 auto;
+  padding: 0 1rem 2rem 1rem;
+  box-sizing: border-box;
+}
+.summary-card.plycard {
+  background: #fffbe7;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px #0002;
+  padding: 1.5rem 1.2rem 1.2rem 1.5rem;
+  width: 100%;
+  min-width: 0;
+  max-width: 350px;
+  min-height: 180px;
+  border: 2px solid #ffe066;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.summary-card.plycard:hover {
+  box-shadow: 0 8px 32px #0003;
+}
+.summary-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #b8860b;
+}
+.summary-card .ministry {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+.summary-card .summary-text {
+  font-size: 1rem;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+.summary-card .tags {
+  margin-top: 0.5rem;
+}
+.summary-card .tag {
+  display: inline-block;
+  background: #ffe066;
+  color: #b8860b;
+  border-radius: 6px;
+  padding: 0.2em 0.7em;
+  font-size: 0.85em;
+  margin-right: 0.3em;
+}
+@media (max-width: 1100px) {
+  #summaryContainer {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+  }
+}
+@media (max-width: 700px) {
+  #summaryContainer {
+    grid-template-columns: 1fr;
+    max-width: 98vw;
+    padding: 0 0.5rem 2rem 0.5rem;
+  }
+  .summary-card.plycard {
+    width: 100%;
+    max-width: 98vw;
+    min-width: 0;
+  }
+}

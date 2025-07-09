@@ -26,21 +26,70 @@ function renderSummaries(summaries) {
     }).join('');
 }
 
+
+const API_BASE = "http://localhost:8000"; // Change if backend runs elsewhere
+
+
+
+async function fetchAndRender(date) {
+    // Get current time in user's local time (24h format)
+    const now = new Date();
+    const hour = now.getHours();
+    let needUpdate = false;
+    if (hour >= 21) {
+        // After 9:00 PM, always update
+        needUpdate = true;
+    }
+    try {
+        const res = await fetch(`${API_BASE}/summaries/${date}`);
+        if (!res.ok) throw new Error();
+        if (needUpdate) {
+            // After 9:00 PM, always POST to update
+            document.getElementById("summaryContainer").innerHTML = "<p>Updating summaries for this date...</p>";
+            const postRes = await fetch(`${API_BASE}/run-pipeline`, { method: 'POST' });
+            if (postRes.ok) {
+                setTimeout(() => fetchAndRender(date), 1200000);
+                return;
+            } else {
+                document.getElementById("summaryContainer").innerHTML = "<p>Failed to update summaries. Please try again later.</p>";
+                return;
+            }
+        }
+        const data = await res.json();
+        renderSummaries(data.summaries);
+    } catch (e) {
+        // If not found, try to trigger the pipeline
+        document.getElementById("summaryContainer").innerHTML = "<p>Generating summaries for this date...</p>";
+        try {
+            const postRes = await fetch(`${API_BASE}/run-pipeline`, { method: 'POST' });
+            if (postRes.ok) {
+                setTimeout(() => fetchAndRender(date), 1200000);
+            } else {
+                document.getElementById("summaryContainer").innerHTML = "<p>Failed to generate summaries. Please try again later.</p>";
+            }
+        } catch (err) {
+            document.getElementById("summaryContainer").innerHTML = "<p>Failed to generate summaries. Please try again later.</p>";
+        }
+    }
+}
+
 document.getElementById("datePicker").addEventListener("change", function() {
     const selectedDate = this.value;
-    fetch(`../data/${selectedDate}.json`)
-        .then(res => res.json())
-        .then(data => {
-            renderSummaries(data.summaries);
-        })
-        .catch(() => {
-            document.getElementById("summaryContainer").innerHTML = "<p>No data found for this date.</p>";
-        });
+    fetchAndRender(selectedDate);
 });
+
 
 window.addEventListener('DOMContentLoaded', function() {
     const today = new Date().toISOString().slice(0, 10);
     document.getElementById('datePicker').value = today;
-    const event = new Event('change');
-    document.getElementById('datePicker').dispatchEvent(event);
+    fetchAndRender(today);
+
+    // WebSocket for live updates
+    const ws = new WebSocket('ws://localhost:8000/ws/updates');
+    ws.onmessage = function(event) {
+        if (event.data === 'update') {
+            const date = document.getElementById('datePicker').value;
+            fetchAndRender(date);
+        }
+    };
 });

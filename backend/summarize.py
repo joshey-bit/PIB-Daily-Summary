@@ -1,7 +1,7 @@
 # Summarization logic using DeepSeek Chat (OpenRouter)
 import sys
-sys.path.append('./chat_engine')
-from chat_engine.openai_chat_connection import llm
+#sys.path.append('./chat_engine')
+from backend.chat_engine.openai_chat_connection import llm
 
 
 def summarize_content(title, body, ministry):

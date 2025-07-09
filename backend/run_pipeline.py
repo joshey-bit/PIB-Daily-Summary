@@ -1,8 +1,8 @@
 
 import os
 import json
-from fetch_pib import fetch_pib_articles
-from summarize import summarize_article
+from backend.fetch_pib import fetch_pib_articles
+from backend.summarize import summarize_article
 
 def run_pipeline():
     articles = fetch_pib_articles()
@@ -13,7 +13,7 @@ def run_pipeline():
     for a in articles:
         opt_title, summary = summarize_article(a['title'], a['body'], a['ministry'])
         # Recompute tags using the same logic as fetch_pib.py
-        from fetch_pib import save_articles_json
+        from backend.fetch_pib import save_articles_json
         def extract_tags(title, ministry):
             tags = set()
             abbr_map = {
